@@ -1,0 +1,23 @@
+### Get note
+get http://localhost:3000/note
+
+### Create note
+POST http://localhost:3000/add
+Content-Type: application/json
+
+{
+    "title" : "praktikum",
+    "content": "tugas buat crud"
+}
+
+### Update note
+PUT http://localhost:3000/note-update/1
+Content-Type: application/json
+
+{
+    "title" : "xampp ku erorr",
+    "content" : "jadinya ganti laragon"
+}
+
+### Delete note
+DELETE http://localhost:3000/note-delete/4
