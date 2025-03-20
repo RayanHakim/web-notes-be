@@ -15,7 +15,7 @@ steps:
       '--platform', 'managed', 
       '--region', 'us-central1', 
       '--allow-unauthenticated',
-      '--port', '3000'
+      '--port', '5000'
     ]
 
 # Opsional: Set up logging agar log hanya disimpan di Cloud Logging
