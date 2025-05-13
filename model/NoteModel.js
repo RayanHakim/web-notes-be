@@ -6,7 +6,9 @@ const Note = db.define('note', {
     content: Sequelize.STRING,},{
         freezeTableName: true,
         createdAt: 'tanggal_buat',
-        updatedAt: 'tanggal_ubah'
+        updatedAt: 'tanggal_ubah',
+        password: Sequelize.STRING,
+        refresh_token: Sequelize.TEXT
 });
 
 export default Note;
