@@ -6,6 +6,15 @@ import {
   deleteNote
 } from "../controller/NoteController.js";
 
+import {
+  getUsers,
+  createUser,
+  updateUser,
+  deleteUser,
+  getUserById,
+  loginHandler,
+  logout
+} from "../controller/UserController.js";
 
 import { refreshToken } from "../controller/RefreshToken.js";
 import { verifyToken } from "../middleware/VerifyToken.js";
@@ -22,7 +31,7 @@ router.post('/register', createUser);
 router.get("/users", verifyToken, getUsers);
 router.get("/users/:id", verifyToken, getUserById);
 router.put("/edit-user/:id", verifyToken, updateUser);
-router.delete("/delete-user/:id", deleteUser); // optional: bisa tambahkan verifyToken
+router.delete("/delete-user/:id", deleteUser); // optional: tambahkan verifyToken jika perlu
 
 // ==================== NOTE ROUTES (Protected) ====================
 router.get('/note', verifyToken, getNote);
