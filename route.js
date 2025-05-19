@@ -9,15 +9,26 @@ const { generateRefreshToken, verifyRefreshToken } = require('./refreshToken');
 const verifyToken = require('./verifyToken');
 const userModel = require('./noteModel');
 
-router.post('/register', async (req, res) => {
-    const { username, password } = req.body;
-    const hash = await bcrypt.hash(password, 10);
-    userModel.addUser(username, hash, (err) => {
-        if (err) return res.status(500).send("Username sudah digunakan.");
-        res.send("Registrasi berhasil!");
-    });
+// Route GET / sebagai landing page / halaman utama
+router.get('/', (req, res) => {
+    res.send('Halo, ini halaman utama!');
 });
 
+// Registrasi user baru dengan hashing password
+router.post('/register', async (req, res) => {
+    const { username, password } = req.body;
+    try {
+        const hash = await bcrypt.hash(password, 10);
+        userModel.addUser(username, hash, (err) => {
+            if (err) return res.status(500).send("Username sudah digunakan.");
+            res.send("Registrasi berhasil!");
+        });
+    } catch (error) {
+        res.status(500).send("Terjadi kesalahan server.");
+    }
+});
+
+// Login user dan buat JWT access token + refresh token
 router.post('/login', (req, res) => {
     const { username, password } = req.body;
     userModel.findUserByUsername(username, async (err, user) => {
@@ -25,14 +36,24 @@ router.post('/login', (req, res) => {
         const valid = await bcrypt.compare(password, user.password);
         if (!valid) return res.status(401).send("Password salah");
 
-        const accessToken = jwt.sign({ id: user.id, username: user.username }, process.env.JWT_SECRET, { expiresIn: '15m' });
+        // Gunakan secret JWT sesuai dengan .env (pastikan JWT_SECRET ada di .env)
+        const accessToken = jwt.sign(
+            { id: user.id, username: user.username },
+            process.env.JWT_SECRET,
+            { expiresIn: '15m' }
+        );
         const refreshToken = generateRefreshToken({ id: user.id, username: user.username });
         res.json({ accessToken, refreshToken });
     });
 });
 
+// Endpoint untuk refresh token
 router.post('/token', verifyRefreshToken);
+
+// Endpoint untuk mendapatkan notes, harus login dulu (verifyToken)
 router.get('/notes', verifyToken, getNotes);
+
+// Endpoint untuk menambah note, harus login dulu (verifyToken)
 router.post('/notes', verifyToken, addNote);
 
 module.exports = router;
