@@ -26,21 +26,25 @@ router.post('/register', async (req, res) => {
     }
 });
 
-router.post('/login', (req, res) => {
-    const { username, password } = req.body;
-    userModel.findUserByUsername(username, async (err, user) => {
-        if (err || !user) return res.status(401).send("User tidak ditemukan");
-        const valid = await bcrypt.compare(password, user.password);
-        if (!valid) return res.status(401).send("Password salah");
+router.post("/login", (req, res) => {
+  const { username, password } = req.body;
+  userModel.findUserByUsername(username, async (err, user) => {
+    if (err || !user) return res.status(401).send("User tidak ditemukan");
+    const valid = await bcrypt.compare(password, user.password);
+    if (!valid) return res.status(401).send("Password salah");
 
-        const accessToken = jwt.sign(
-            { id: user.id, username: user.username },
-            process.env.ACCESS_TOKEN_SECRET, // Eh benar kan ya masalahnya disini
-            { expiresIn: '15m' }
-        );
-        const refreshToken = generateRefreshToken({ id: user.id, username: user.username });
-        res.json({ accessToken, refreshToken });
+    // Gunakan secret JWT sesuai dengan .env (pastikan JWT_SECRET ada di .env)
+    const accessToken = jwt.sign(
+      { id: user.id, username: user.username },
+      process.env.ACCESS_TOKEN_SECRET,
+      { expiresIn: "15m" }
+    );
+    const refreshToken = generateRefreshToken({
+      id: user.id,
+      username: user.username,
     });
+    res.json({ accessToken, refreshToken });
+  });
 });
 
 router.post('/token', verifyRefreshToken);
