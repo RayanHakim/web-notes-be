@@ -18,7 +18,7 @@ exports.verifyRefreshToken = (req, res) => {
 
         const accessToken = jwt.sign(
             { id: user.id, username: user.username },
-            process.env.ACCESS_TOKEN_SECRET, //  Semoga ini kesalahannya dah
+            process.env.REFRESH_TOKEN_SECRET, //  Semoga ini kesalahannya dah
             { expiresIn: '15m' }
         );
         res.json({ accessToken });
