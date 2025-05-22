@@ -9,12 +9,12 @@ const { generateRefreshToken, verifyRefreshToken } = require('./refreshToken');
 const verifyToken = require('./verifyToken');
 const userModel = require('./noteModel');
 
-// Route GET / sebagai landing page / halaman utama
+// Landing page
 router.get('/', (req, res) => {
     res.send('Halo, ini halaman utama!');
 });
 
-// Registrasi user baru dengan hashing password
+// Register user
 router.post('/register', async (req, res) => {
     const { username, password } = req.body;
     try {
@@ -28,7 +28,7 @@ router.post('/register', async (req, res) => {
     }
 });
 
-// Login user dan buat JWT access token + refresh token
+// Login user
 router.post('/login', (req, res) => {
     const { username, password } = req.body;
     userModel.findUserByUsername(username, async (err, user) => {
@@ -36,7 +36,6 @@ router.post('/login', (req, res) => {
         const valid = await bcrypt.compare(password, user.password);
         if (!valid) return res.status(401).send("Password salah");
 
-        // Gunakan secret JWT sesuai dengan .env (pastikan JWT_SECRET ada di .env)
         const accessToken = jwt.sign(
             { id: user.id, username: user.username },
             process.env.JWT_SECRET,
@@ -47,13 +46,13 @@ router.post('/login', (req, res) => {
     });
 });
 
-// Endpoint untuk refresh token
+// Refresh token endpoint
 router.post('/token', verifyRefreshToken);
 
-// Endpoint untuk mendapatkan notes, harus login dulu (verifyToken)
+// Get notes (auth required)
 router.get('/notes', verifyToken, getNotes);
 
-// Endpoint untuk menambah note, harus login dulu (verifyToken)
+// Add note (auth required)
 router.post('/notes', verifyToken, addNote);
 
 module.exports = router;
