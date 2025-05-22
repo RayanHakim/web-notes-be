@@ -9,12 +9,10 @@ const { generateRefreshToken, verifyRefreshToken } = require('./refreshToken');
 const verifyToken = require('./verifyToken');
 const userModel = require('./noteModel');
 
-// Landing page
 router.get('/', (req, res) => {
     res.send('Halo, ini halaman utama!');
 });
 
-// Register user
 router.post('/register', async (req, res) => {
     const { username, password } = req.body;
     try {
@@ -28,7 +26,6 @@ router.post('/register', async (req, res) => {
     }
 });
 
-// Login user
 router.post('/login', (req, res) => {
     const { username, password } = req.body;
     userModel.findUserByUsername(username, async (err, user) => {
@@ -38,7 +35,7 @@ router.post('/login', (req, res) => {
 
         const accessToken = jwt.sign(
             { id: user.id, username: user.username },
-            process.env.JWT_SECRET,
+            process.env.ACCESS_TOKEN_SECRET, // Eh benar kan ya masalahnya disini
             { expiresIn: '15m' }
         );
         const refreshToken = generateRefreshToken({ id: user.id, username: user.username });
@@ -46,13 +43,8 @@ router.post('/login', (req, res) => {
     });
 });
 
-// Refresh token endpoint
 router.post('/token', verifyRefreshToken);
-
-// Get notes (auth required)
 router.get('/notes', verifyToken, getNotes);
-
-// Add note (auth required)
 router.post('/notes', verifyToken, addNote);
 
 module.exports = router;
